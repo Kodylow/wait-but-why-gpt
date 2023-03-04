@@ -52,20 +52,28 @@ export function LightningModal({
   }, [lightningInvoice, setShowModal]);
 
   let content = (
-    <QRCode
-      value={lightningInvoice.pr}
-      size={256}
-      onClick={handleCopyClick}
-      className="cursor-pointer"
-    />
+    <div className="w-64 h-64 relative">
+      <QRCode
+        value={lightningInvoice.pr}
+        size={256}
+        onClick={handleCopyClick}
+        className="w-full h-full absolute cursor-pointer"
+      />
+    </div>
   );
 
   if (status === "success") {
     content = (
-      <div className="flex justify-center items-center flex-wrap p-4 mb-4">
-        <div style={{ width: 256, height: 256 }}>
-          <IconCircleCheck size={256} stroke={3} color="green" />
-        </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: 256,
+          height: 256,
+        }}
+      >
+        <IconCircleCheck size={128} stroke={3} color="green" />
       </div>
     );
   }
@@ -81,7 +89,7 @@ export function LightningModal({
             >
               &times;
             </span>
-            <div className="content-container" style={{ padding: "20px" }}>
+            <div className="content-container flex justify-center p-4">
               {content}
             </div>
             <div className="flex justify-center">
