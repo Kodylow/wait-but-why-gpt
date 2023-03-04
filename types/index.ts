@@ -49,3 +49,14 @@ export type LNURLPAYDATA = {
   nostrPubkey: string;
   allowsNostr: boolean;
 };
+
+export type LightningInvoice = {
+  status: string;
+  successAction: {
+    tag: string;
+    message: string;
+  };
+  verify: string;
+  routes: any[]; // You can replace this with a more specific type if needed
+  pr: string;
+};
