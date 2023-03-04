@@ -1,14 +1,18 @@
 import { Answer } from "@/components/Answer/Answer";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import PayWithLightning from "@/components/PayWithLightning";
 import { WBWChunk } from "@/types";
 import { getImage } from "@/utils/images";
-import { IconArrowRight, IconExternalLink, IconSearch } from "@tabler/icons-react";
+import { IconArrowRight, IconExternalLink, IconSearch, IconBolt } from "@tabler/icons-react";
+import {LightningModal} from "@/components/LightningModal";
 import endent from "endent";
 import Head from "next/head";
 import Image from "next/image";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import {LNURLPAYDATA} from "@/types/LNURLPAYDATA";
+
+const apiKey = process.env.OPENAI_API_KEY || "";
+const lnAddress = process.env.LIGHTNING_ADDRESS || "";
 
 export default function Home() {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -20,7 +24,22 @@ export default function Home() {
 
     const [mode, setMode] = useState<"search" | "chat">("chat");
     const [matchCount, setMatchCount] = useState<number>(5);
-    const apiKey = process.env.OPENAI_API_KEY || "";
+
+    const [lnUrlPayData, setLnUrlPayData] = useState<LNURLPAYDATA>();
+
+    useEffect(() => {
+    async function fetchLnUrlPayData() {
+      const [username, host] = lnAddress.split('@');
+      const url = `https://${host}/.well-known/lnurlp/${username}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      setLnUrlPayData(data);
+    }
+    
+    fetchLnUrlPayData();
+    }, []);
+    
 
 
     const handleSearch = async () => {
@@ -184,6 +203,7 @@ export default function Home() {
 
     return (
         <>
+            {showModal && <LightningModal invoice={invoice} setShowModal={setShowModal} />}
             <Head>
                 <title>Wait But Why GPT</title>
                 <meta
@@ -205,25 +225,25 @@ export default function Home() {
                 <div className="flex-1 overflow-auto">
                     <div className="mx-auto flex h-full w-full max-w-[750px] flex-col items-center px-3 pt-4 sm:pt-8">
 
-                        <div className="relative w-full mt-4 flex items-center justify-between">
-                            <IconSearch className="absolute top-3 w-10 left-1 h-6 rounded-full opacity-50 sm:left-3 sm:top-4 sm:h-8" />
-                            <input
-                                ref={inputRef}
-                                className="h-12 w-full rounded-full border border-zinc-600 pr-12 pl-11 focus:border-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-800 sm:h-16 sm:py-2 sm:pr-16 sm:pl-16 sm:text-lg"
-                                type="text"
-                                placeholder="What is the Instant Gratification Monkey?"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                            />
-                            <PayWithLightning showModal={showModal} setShowModal={setShowModal} />
-                            {showModal && (
-                                <div className="modal">
-                                    <pay-with-ln payment-request="lnbc1pw2uhctpp5p7e6ru568ry6w9ecxn0288gdt65ehdxqmaqchn0xnye09vxvu5qsdqjgdhkven9v5s8g6tsyycqzpgxq97zvuqfh2drun3d9p57nxzj6rmhupnqly84kkte0vxjgqmsz99y2g4aat58xpnc9967kkycnfylx4vrc94ns87cym2y3uu7evc3ecaq26qjhgpeyv6wr"></pay-with-ln>
-                                </div>
-                            )}
-                        </div>
+                        <div className="relative w-full mt-4 border border-gray-400 rounded-full flex items-center justify-between">
+  <IconSearch className="absolute top-3 w-10 left-1 h-6 rounded-full opacity-50 sm:left-3 sm:top-4 sm:h-8" />
+  <div className="flex-grow">
+    <input
+      ref={inputRef}
+      className="h-12 w-full rounded-full border-none px-11 focus:border-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-800 sm:h-16 sm:py-2 sm:pr-16 sm:pl-16 sm:text-lg"
+      type="text"
+      placeholder="What is the Instant Gratification Monkey?"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      onKeyDown={handleKeyDown}
+    />
+  </div>
+  <IconBolt 
+  onClick={() => setShowModal(true)} 
+  className="absolute top-3 right-1 h-6 w-6 rounded-full bg-yellow-500 flex items-center justify-center cursor-pointer sm:right-3 sm:top-4 sm:h-8 sm:w-8 hover:filter hover:invert"
+/>
 
+</div>
 
                         {loading ? (
                             <div className="mt-6 w-full">

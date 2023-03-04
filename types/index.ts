@@ -32,3 +32,20 @@ export type WBWJSON = {
   tokens: number;
   posts: WBWPost[];
 };
+
+
+export type LNURLPAYDATA = {
+  status: string;
+  tag: string;
+  commentAllowed: number;
+  callback: string;
+  metadata: string;
+  minSendable: number;
+  maxSendable: number;
+  payerData: {
+    name: { mandatory: boolean };
+    email: { mandatory: boolean };
+  };
+  nostrPubkey: string;
+  allowsNostr: boolean;
+};
